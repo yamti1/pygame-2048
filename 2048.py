@@ -1,6 +1,7 @@
 from pyprocessing import *
 import numpy as np
 import random
+from contextlib import suppress
 
 BOARD_SIZE = 4, 4  # num_rows, num_columns
 PROB_SPAWN_2 = .75  # the probability to spawn a '2' tile instead of a '4' tile
@@ -38,8 +39,18 @@ def spawn_tile():
     return len(clear_tiles) - 1
 
 
-def is_game_over():
-    pass
+def is_game_over(num_clear_tiles):
+    if num_clear_tiles > 0:
+        return False
+
+    for i, row in enumerate(board):
+        for j, tile in enumerate(row):
+            neighbours = (i+1, j), (i, j+1), (i-1, j), (i, j-1)
+            for neighbour in neighbours:
+                with suppress(IndexError):
+                    if tile == board[neighbour]:
+                        return False
+    return True
 
 
 def game_over():
@@ -74,9 +85,9 @@ def keyPressed():
             reversed_row += [0] * (BOARD_SIZE[1] - len(reversed_row))
             board[i, :] = reversed(reversed_row)
 
-    spawn_tile()
+    num_clear_tiles = spawn_tile()
 
-    if is_game_over():
+    if is_game_over(num_clear_tiles):
         game_over()
 
 
