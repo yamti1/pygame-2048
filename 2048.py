@@ -76,29 +76,27 @@ def keyPressed():
     if key.char != CODED:
         return
 
-    if key.code == UP:
-        for i in range(BOARD_SIZE[1]):
-            column = merge_tiles(list(board[:, i]))
-            column += [0] * (BOARD_SIZE[0] - len(column))
-            board[:, i] = column
+    def update_board(dimension, reverse=False):
+        other_dimension = -dimension + 1  # 0 => 1; 1 => 0
+        for i in range(BOARD_SIZE[dimension]):
+            target_indexes = (..., i) if dimension == 1 else (i, ...)
 
-    elif key.code == DOWN:
-        for i in range(BOARD_SIZE[1]):
-            reversed_column = merge_tiles(list(reversed(board[:, i])))
-            reversed_column += [0] * (BOARD_SIZE[0] - len(reversed_column))
-            board[:, i] = reversed(reversed_column)
+            tiles = board[target_indexes]                               # get the tiles from the board
+            tiles = reversed(tiles) if reverse else tiles               # reverse the tiles if needed
+            tiles = merge_tiles(tiles)                                  # merge the tiles
+            tiles += [0] * (BOARD_SIZE[other_dimension] - len(tiles))   # add zero tiles to complete the row/column
+            tiles = reversed(tiles) if reverse else tiles               # re-reverse the tiles if needed
 
-    elif key.code == LEFT:
-        for i in range(BOARD_SIZE[0]):
-            row = merge_tiles(list(board[i, :]))
-            row += [0] * (BOARD_SIZE[1] - len(row))
-            board[i, :] = row
+            board[target_indexes] = tiles                               # set the updated tiles to the board
 
-    elif key.code == RIGHT:
-        for i in range(BOARD_SIZE[0]):
-            reversed_row = merge_tiles(list(reversed(board[i, :])))
-            reversed_row += [0] * (BOARD_SIZE[1] - len(reversed_row))
-            board[i, :] = reversed(reversed_row)
+    map_keycode_to_args = {
+        UP: [1],
+        DOWN: [1, True],
+        LEFT: [0],
+        RIGHT: [0, True],
+    }
+    with suppress(KeyError):
+        update_board(*map_keycode_to_args[key.code])
 
     num_clear_tiles = spawn_tile()
 
