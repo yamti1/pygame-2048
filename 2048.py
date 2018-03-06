@@ -82,10 +82,10 @@ def keyPressed():
             target_indexes = (..., i) if dimension == 1 else (i, ...)
 
             tiles = board[target_indexes]                               # get the tiles from the board
-            tiles = reversed(tiles) if reverse else tiles               # reverse the tiles if needed
+            tiles = list(reversed(tiles) if reverse else tiles)         # reverse the tiles if needed
             tiles = merge_tiles(tiles)                                  # merge the tiles
             tiles += [0] * (BOARD_SIZE[other_dimension] - len(tiles))   # add zero tiles to complete the row/column
-            tiles = reversed(tiles) if reverse else tiles               # re-reverse the tiles if needed
+            tiles = list(reversed(tiles) if reverse else tiles)         # re-reverse the tiles if needed
 
             board[target_indexes] = tiles                               # set the updated tiles to the board
 
