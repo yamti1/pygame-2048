@@ -3,13 +3,28 @@ import numpy as np
 import random
 from contextlib import suppress
 
+# region Constants
+# Gameplay Constants
 BOARD_SIZE = 4, 4  # num_rows, num_columns
 PROB_SPAWN_2 = .75  # the probability to spawn a '2' tile instead of a '4' tile
+
+# Graphics Constants
+BOARD_RAILING = 10
+TILE_WIDTH = 90
+TILE_HEIGHT = 90
+SIDE_EDGES = 70
+TOP_EDGE = 30
+BOTTOM_EDGE = 100
+BACKGROUND_COLOR = 230
+RAILING_COLOR = 150
+EMPTY_TILE_COLOR = 170
+# endregion
 
 board = np.zeros(BOARD_SIZE, int)
 
 
 def merge_tiles(tiles):
+    # TODO: delete all '0' tiles here, to move all of the tiles to the beginning of the list.
     i = 0
     while i < len(tiles) - 2:
         if tiles[i] == tiles[i+1]:
@@ -90,12 +105,35 @@ def keyPressed():
     if is_game_over(num_clear_tiles):
         game_over()
 
+    loop()  # render a single frame (noLoop() is called at the end of draw())
+
 
 def setup():
-    pass
+    w = SIDE_EDGES * 2 + (TILE_WIDTH + BOARD_RAILING) * BOARD_SIZE[0] + BOARD_RAILING
+    h = TOP_EDGE + BOTTOM_EDGE + (TILE_HEIGHT + BOARD_RAILING) * BOARD_SIZE[1] + BOARD_RAILING
+    size(w, h, caption='2048')
 
 
 def draw():
-    pass
+    background(BACKGROUND_COLOR)
+
+    # Board railing
+    fill(RAILING_COLOR)
+    noStroke()
+    rect(SIDE_EDGES, TOP_EDGE, width - SIDE_EDGES * 2, height - TOP_EDGE - BOTTOM_EDGE)
+
+    # Board tiles
+    noStroke()
+    for i in range(BOARD_SIZE[0]):
+        for j in range(BOARD_SIZE[1]):
+            x = SIDE_EDGES + BOARD_RAILING + (BOARD_RAILING + TILE_WIDTH) * i
+            y = TOP_EDGE + BOARD_RAILING + (BOARD_RAILING + TILE_HEIGHT) * j
+            if board[i, j] == 0:
+                fill(EMPTY_TILE_COLOR)
+            else:
+                fill(255)
+            rect(x, y, TILE_WIDTH, TILE_HEIGHT)
+
+    noLoop()  # another frame will be rendered on keyPressed()
 
 run()
