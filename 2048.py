@@ -119,13 +119,14 @@ def update_frame():
     noStroke()
     for i in range(BOARD_SIZE[0]):
         for j in range(BOARD_SIZE[1]):
+            fill(EMPTY_TILE_COLOR if board[i, j] == 0 else 255)
             x = SIDE_EDGES + BOARD_RAILING + (BOARD_RAILING + TILE_WIDTH) * i
             y = TOP_EDGE + BOARD_RAILING + (BOARD_RAILING + TILE_HEIGHT) * j
-            if board[i, j] == 0:
-                fill(EMPTY_TILE_COLOR)
-            else:
-                fill(255)
             rect(x, y, TILE_WIDTH, TILE_HEIGHT)
+
+            fill(0)
+            textAlign(CENTER, CENTER)
+            text(board[i, j], x + TILE_WIDTH/2, y + TILE_HEIGHT/2)
 
 
 def main():
