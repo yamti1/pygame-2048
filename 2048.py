@@ -7,6 +7,7 @@ from contextlib import suppress
 # Gameplay Constants
 BOARD_SIZE = 4, 4  # num_rows, num_columns
 PROB_SPAWN_2 = .75  # the probability to spawn a '2' tile instead of a '4' tile
+TARGET_TILE = 2048
 
 # Graphics Constants
 BOARD_RAILING = 10
@@ -21,18 +22,19 @@ EMPTY_TILE_COLOR = 170
 # endregion
 
 board = np.zeros(BOARD_SIZE, int)
+game_is_over = False
 
 
 def merge_tiles(tiles):
+    tiles = [tile for tile in tiles if tile != 0]  # remove all zero-tiles
     i = 0
-    while i < len(tiles) - 2:
-        if tiles[i] == 0:
-            del tiles[i]
-            continue
+    while i < len(tiles) - 1:
         if tiles[i] == tiles[i+1]:
             tiles[i] += tiles[i+1]
             del tiles[i+1]
-            continue
+        if tiles[i] == TARGET_TILE:
+            game_over()
+            break
         i += 1
 
     return tiles  # for convenience. the tiles are merged in-place.
@@ -71,7 +73,12 @@ def is_game_over(num_clear_tiles):
 
 
 def game_over():
-    pass
+    global game_is_over
+    game_is_over = True
+    textAlign(CENTER, CENTER)
+    textSize(50)
+    fill(0)
+    text("Game Over", width/2, height - BOTTOM_EDGE/2)
 
 
 def update_board(dimension, reverse=False):
@@ -90,6 +97,8 @@ def update_board(dimension, reverse=False):
 
 def keyPressed():
     if key.char != CODED:
+        return
+    if game_is_over:
         return
 
     map_keycode_to_args = {
