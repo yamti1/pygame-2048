@@ -64,7 +64,11 @@ def is_game_over(num_clear_tiles):
 
     for i, row in enumerate(board):
         for j, tile in enumerate(row):
-            neighbours = (i+1, j), (i, j+1), (i-1, j), (i, j-1)
+            neighbours = [(i+1, j), (i, j+1), (i-1, j), (i, j-1)]
+
+            # remove neighbours with negative indexes
+            neighbours = [(row, col) for row, col in neighbours if row > -1 and col > -1]
+
             for neighbour in neighbours:
                 with suppress(IndexError):
                     if tile == board[neighbour]:
