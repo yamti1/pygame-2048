@@ -24,9 +24,11 @@ board = np.zeros(BOARD_SIZE, int)
 
 
 def merge_tiles(tiles):
-    # TODO: delete all '0' tiles here, to move all of the tiles to the beginning of the list.
     i = 0
     while i < len(tiles) - 2:
+        if tiles[i] == 0:
+            del tiles[i]
+            continue
         if tiles[i] == tiles[i+1]:
             tiles[i] += tiles[i+1]
             del tiles[i+1]
@@ -91,10 +93,10 @@ def keyPressed():
         return
 
     map_keycode_to_args = {
-        UP: [1],
-        DOWN: [1, True],
-        LEFT: [0],
-        RIGHT: [0, True],
+        UP: [0],
+        DOWN: [0, True],
+        LEFT: [1],
+        RIGHT: [1, True],
     }
     with suppress(KeyError):
         update_board(*map_keycode_to_args[key.code])
