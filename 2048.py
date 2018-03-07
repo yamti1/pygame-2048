@@ -72,22 +72,23 @@ def game_over():
     pass
 
 
+def update_board(dimension, reverse=False):
+    other_dimension = -dimension + 1  # 0 => 1; 1 => 0
+    for i in range(BOARD_SIZE[dimension]):
+        target_indexes = (..., i) if dimension == 1 else (i, ...)
+
+        tiles = board[target_indexes]                               # get the tiles from the board
+        tiles = list(reversed(tiles) if reverse else tiles)         # reverse the tiles if needed
+        tiles = merge_tiles(tiles)                                  # merge the tiles
+        tiles += [0] * (BOARD_SIZE[other_dimension] - len(tiles))   # add zero tiles to complete the row/column
+        tiles = list(reversed(tiles) if reverse else tiles)         # re-reverse the tiles if needed
+
+        board[target_indexes] = tiles                               # set the updated tiles to the board
+
+
 def keyPressed():
     if key.char != CODED:
         return
-
-    def update_board(dimension, reverse=False):
-        other_dimension = -dimension + 1  # 0 => 1; 1 => 0
-        for i in range(BOARD_SIZE[dimension]):
-            target_indexes = (..., i) if dimension == 1 else (i, ...)
-
-            tiles = board[target_indexes]                               # get the tiles from the board
-            tiles = list(reversed(tiles) if reverse else tiles)         # reverse the tiles if needed
-            tiles = merge_tiles(tiles)                                  # merge the tiles
-            tiles += [0] * (BOARD_SIZE[other_dimension] - len(tiles))   # add zero tiles to complete the row/column
-            tiles = list(reversed(tiles) if reverse else tiles)         # re-reverse the tiles if needed
-
-            board[target_indexes] = tiles                               # set the updated tiles to the board
 
     map_keycode_to_args = {
         UP: [1],
@@ -100,19 +101,13 @@ def keyPressed():
 
     num_clear_tiles = spawn_tile()
 
+    update_frame()
+
     if is_game_over(num_clear_tiles):
         game_over()
 
-    loop()  # render a single frame (noLoop() is called at the end of draw())
 
-
-def setup():
-    w = SIDE_EDGES * 2 + (TILE_WIDTH + BOARD_RAILING) * BOARD_SIZE[0] + BOARD_RAILING
-    h = TOP_EDGE + BOTTOM_EDGE + (TILE_HEIGHT + BOARD_RAILING) * BOARD_SIZE[1] + BOARD_RAILING
-    size(w, h, caption='2048')
-
-
-def draw():
+def update_frame():
     background(BACKGROUND_COLOR)
 
     # Board railing
@@ -132,6 +127,16 @@ def draw():
                 fill(255)
             rect(x, y, TILE_WIDTH, TILE_HEIGHT)
 
-    noLoop()  # another frame will be rendered on keyPressed()
 
-run()
+def main():
+    w = SIDE_EDGES * 2 + (TILE_WIDTH + BOARD_RAILING) * BOARD_SIZE[0] + BOARD_RAILING
+    h = TOP_EDGE + BOTTOM_EDGE + (TILE_HEIGHT + BOARD_RAILING) * BOARD_SIZE[1] + BOARD_RAILING
+    size(w, h, caption='2048')
+
+    update_frame()
+
+    noLoop()
+    run()
+
+if __name__ == '__main__':
+    main()
